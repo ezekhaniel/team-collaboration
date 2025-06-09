@@ -5,13 +5,9 @@ let won = false;
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Add status display
-    const gameContainer = document.querySelector('.game-container');
-    const statusDiv = document.createElement('div');
-    statusDiv.id = 'status';
-    statusDiv.className = 'status';
+    // Initialize status display
+    const statusDiv = document.getElementById('status');
     statusDiv.innerText = "Player O's turn";
-    gameContainer.appendChild(statusDiv);
 
     // Add click handlers to cells
     document.querySelectorAll('.cell').forEach((cell, index) => {
@@ -21,12 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.addEventListener('click', () => place(cell));
     });
 
-    // Add reset button
-    const resetButton = document.createElement('button');
-    resetButton.innerText = 'Reset Game';
-    resetButton.className = 'reset-button';
-    resetButton.addEventListener('click', resetGame);
-    gameContainer.appendChild(resetButton);
+    // Add reset button handler
+    document.querySelector('.reset-button').addEventListener('click', resetGame);
 });
 
 function place(box) {
