@@ -5,7 +5,58 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="styles.css">
+        <style>
+            .game-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .board {
+                display: grid;
+                grid-template-columns: repeat(3, 100px);
+                grid-template-rows: repeat(3, 100px);
+                gap: 5px;
+                margin: 20px auto;
+                background-color: #333;
+                padding: 10px;
+                border-radius: 10px;
+            }
+
+            .cell {
+                background-color: white;
+                border: none;
+                font-size: 2rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                border-radius: 5px;
+            }
+
+            .cell:hover {
+                background-color: #f0f0f0;
+            }
+
+            .cell:disabled {
+                cursor: not-allowed;
+            }
+
+            .winning-cell {
+                background-color: #4CAF50 !important;
+                color: white !important;
+            }
+
+            .status {
+                font-size: 1.5rem;
+                margin: 20px 0;
+                font-weight: bold;
+            }
+
+            .game-status {
+                text-align: center;
+            }
+        </style>
         <!-- PeerJS -->
         <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
         <title>Multiplayer Tic-Tac-Toe</title>
@@ -59,14 +110,18 @@
             document.getElementById('hostBtn').addEventListener('click', () => {
                 peer = new Peer();
                 peer.on('open', (id) => {
-                    document.getElementById('hostId').innerHTML = `Your Game ID: ${id}`;
+                    document.getElementById('hostId').innerHTML = `Your Game ID: <strong>${id}</strong>`;
                     isHost = true;
                 });
                 peer.on('connection', handleConnection);
             });
 
             document.getElementById('joinBtn').addEventListener('click', () => {
-                const hostId = document.getElementById('joinId').value;
+                const hostId = document.getElementById('joinId').value.trim();
+                if (!hostId) {
+                    alert('Please enter a Host ID');
+                    return;
+                }
                 peer = new Peer();
                 peer.on('open', () => {
                     conn = peer.connect(hostId);
@@ -82,6 +137,7 @@
                 conn.on('open', () => {
                     document.getElementById('connection-controls').style.display = 'none';
                     document.getElementById('gameBoard').style.display = 'block';
+                    document.getElementById('resetBtn').style.display = 'block';
                     gameActive = true;
                     myTurn = isHost;
                     updateStatus();
@@ -90,8 +146,12 @@
                 conn.on('data', (data) => {
                     if (data.type === 'move') {
                         handleMove(data.index, data.player);
-                        myTurn = true;
-                        updateStatus();
+                        if (gameActive) {
+                            myTurn = true;
+                            updateStatus();
+                        }
+                    } else if (data.type === 'reset') {
+                        resetGame();
                     }
                 });
             }
@@ -100,30 +160,92 @@
                 cell.addEventListener('click', () => {
                     if (!gameActive || !myTurn || cell.textContent !== '') return;
                     
-                    const index = cell.dataset.index;
+                    const index = parseInt(cell.dataset.index);
                     const player = isHost ? 'X' : 'O';
                     
                     handleMove(index, player);
-                    conn.send({
-                        type: 'move',
-                        index: index,
-                        player: player
-                    });
                     
-                    myTurn = false;
-                    updateStatus();
+                    if (conn && conn.open) {
+                        conn.send({
+                            type: 'move',
+                            index: index,
+                            player: player
+                        });
+                    }
+                    
+                    if (gameActive) {
+                        myTurn = false;
+                        updateStatus();
+                    }
                 });
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetGame();
+                if (conn && conn.open) {
+                    conn.send({ type: 'reset' });
+                }
             });
 
             function handleMove(index, player) {
                 const cell = document.querySelector(`[data-index="${index}"]`);
                 cell.textContent = player;
                 cell.style.color = player === 'X' ? '#f44336' : '#2196F3';
+
+                // Check for winner
+                if (checkWinner(player)) {
+                    gameActive = false;
+                    const isWinner = (isHost && player === 'X') || (!isHost && player === 'O');
+                    document.getElementById('status').textContent = isWinner ? 'You win!' : 'You lose!';
+                    return;
+                }
+
+                // Check for draw
+                if (checkDraw()) {
+                    gameActive = false;
+                    document.getElementById('status').textContent = "It's a draw!";
+                    return;
+                }
+            }
+
+            function checkWinner(player) {
+                const winPatterns = [
+                    [0,1,2], [3,4,5], [6,7,8], // rows
+                    [0,3,6], [1,4,7], [2,5,8], // columns
+                    [0,4,8], [2,4,6]           // diagonals
+                ];
+
+                for (let pattern of winPatterns) {
+                    const cells = pattern.map(i => document.querySelector(`[data-index="${i}"]`));
+                    if (cells.every(cell => cell.textContent === player)) {
+                        cells.forEach(cell => cell.classList.add('winning-cell'));
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function checkDraw() {
+                return [...document.querySelectorAll('.cell')].every(cell => cell.textContent !== '');
             }
 
             function updateStatus() {
+                if (!gameActive) return;
                 const status = document.getElementById('status');
                 status.textContent = myTurn ? 'Your turn!' : "Opponent's turn...";
+            }
+
+            function resetGame() {
+                gameActive = true;
+                myTurn = isHost;
+                
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.textContent = "";
+                    cell.classList.remove('winning-cell');
+                    cell.style.color = "";
+                });
+                
+                updateStatus();
             }
         </script>
     </body>
