@@ -5,20 +5,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Bootstrap JS Bundle -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
         <link rel="stylesheet" href="styles.css">
-        <script src="script.js" defer></script>
-        <title>
-            Tic-Tac-Toe
-        </title>
+        <!-- PeerJS -->
+        <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+        <title>Multiplayer Tic-Tac-Toe</title>
     </head>
     <body>
         <div class="container text-center">
-            <h1 class="display-4 mb-4">
-                Tic Tac Toe
-            </h1>
-            <div class="game-container">
+            <h1 class="display-4 mb-4">Multiplayer Tic-Tac-Toe</h1>
+            
+            <!-- Connection Controls -->
+            <div id="connection-controls" class="mb-4">
+                <div class="row justify-content-center gap-3">
+                    <div class="col-auto">
+                        <button id="hostBtn" class="btn btn-primary">Host Game</button>
+                        <div id="hostId" class="mt-2"></div>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" id="joinId" class="form-control mb-2" placeholder="Enter Host ID">
+                        <button id="joinBtn" class="btn btn-primary">Join Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Board -->
+            <div id="gameBoard" class="game-container" style="display: none;">
                 <div class="board mb-4">
                     <button class="cell" data-index="0"></button>
                     <button class="cell" data-index="1"></button>
@@ -31,10 +42,89 @@
                     <button class="cell" data-index="8"></button>
                 </div>
                 <div class="game-status">
-                    <div id="status" class="status h4 mb-3"></div>
-                    <button class="reset-button btn btn-primary">Reset Game</button>
+                    <div id="status" class="status h4 mb-3">Waiting for connection...</div>
+                    <button id="resetBtn" class="btn btn-primary" style="display: none;">Reset Game</button>
                 </div>
             </div>
         </div>
+
+        <script>
+            let peer = null;
+            let conn = null;
+            let isHost = false;
+            let myTurn = false;
+            let gameActive = false;
+
+            // Initialize PeerJS
+            document.getElementById('hostBtn').addEventListener('click', () => {
+                peer = new Peer();
+                peer.on('open', (id) => {
+                    document.getElementById('hostId').innerHTML = `Your Game ID: ${id}`;
+                    isHost = true;
+                });
+                peer.on('connection', handleConnection);
+            });
+
+            document.getElementById('joinBtn').addEventListener('click', () => {
+                const hostId = document.getElementById('joinId').value;
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(hostId);
+                    handleConnection(conn);
+                });
+            });
+
+            function handleConnection(connection) {
+                if (!conn) {
+                    conn = connection;
+                }
+
+                conn.on('open', () => {
+                    document.getElementById('connection-controls').style.display = 'none';
+                    document.getElementById('gameBoard').style.display = 'block';
+                    gameActive = true;
+                    myTurn = isHost;
+                    updateStatus();
+                });
+
+                conn.on('data', (data) => {
+                    if (data.type === 'move') {
+                        handleMove(data.index, data.player);
+                        myTurn = true;
+                        updateStatus();
+                    }
+                });
+            }
+
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.addEventListener('click', () => {
+                    if (!gameActive || !myTurn || cell.textContent !== '') return;
+                    
+                    const index = cell.dataset.index;
+                    const player = isHost ? 'X' : 'O';
+                    
+                    handleMove(index, player);
+                    conn.send({
+                        type: 'move',
+                        index: index,
+                        player: player
+                    });
+                    
+                    myTurn = false;
+                    updateStatus();
+                });
+            });
+
+            function handleMove(index, player) {
+                const cell = document.querySelector(`[data-index="${index}"]`);
+                cell.textContent = player;
+                cell.style.color = player === 'X' ? '#f44336' : '#2196F3';
+            }
+
+            function updateStatus() {
+                const status = document.getElementById('status');
+                status.textContent = myTurn ? 'Your turn!' : "Opponent's turn...";
+            }
+        </script>
     </body>
 </html>

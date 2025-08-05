@@ -83,3 +83,24 @@ h1 {
     background-color: #4a4af4;
     color: white;
 }
+
+#hostId {
+    font-size: 1.2rem;
+    color: #ffffff;
+    word-break: break-all;
+}
+
+#joinId {
+    background-color: #2d2d2d;
+    border: 1px solid #4a4af4;
+    color: #ffffff;
+}
+
+#joinId::placeholder {
+    color: #888;
+}
+
+.cell:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
