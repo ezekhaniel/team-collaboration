@@ -191,6 +191,12 @@ h1 {
     margin: 0 auto;
 }
 
+#resetBtn {
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+}
+
 @keyframes titlePulse {
     0% { text-shadow: 0 0 10px rgba(123, 97, 255, 0.5); }
     50% { text-shadow: 0 0 20px rgba(123, 97, 255, 0.8); }

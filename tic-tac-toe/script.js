@@ -11,42 +11,51 @@ function generateShortId() {
 }
 
 // Initialize PeerJS
-document.getElementById('hostBtn').addEventListener('click', () => {
-    document.getElementById('joinId').style.display = 'none';
-    const shortId = generateShortId();
-    peer = new Peer(shortId);
-    
-    peer.on('open', () => {
-        const hostIdElement = document.getElementById('hostId');
-        hostIdElement.innerHTML = `Room Code: <strong>${shortId}</strong>`;
-        hostIdElement.classList.add('visible');
+if (DEBUG_MODE) {
+    document.addEventListener('DOMContentLoaded', () => {
         isHost = true;
+        gameActive = true;
+        myTurn = true;
+        updateStatus();
     });
-    
-    peer.on('connection', handleConnection);
-});
-
-document.getElementById('joinBtn').addEventListener('click', () => {
-    document.getElementById('hostId').classList.remove('visible');
-    const joinInput = document.getElementById('joinId');
-    joinInput.style.display = 'block';
-    joinInput.focus();
-});
-
-document.getElementById('joinId').addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        const hostId = event.target.value.trim();
-        if (!hostId) {
-            alert('Please enter a Host ID');
-            return;
-        }
-        peer = new Peer();
+} else {
+    document.getElementById('hostBtn').addEventListener('click', () => {
+        document.getElementById('joinId').style.display = 'none';
+        const shortId = generateShortId();
+        peer = new Peer(shortId);
+        
         peer.on('open', () => {
-            conn = peer.connect(hostId);
-            handleConnection(conn);
+            const hostIdElement = document.getElementById('hostId');
+            hostIdElement.innerHTML = `Room Code: <strong>${shortId}</strong>`;
+            hostIdElement.classList.add('visible');
+            isHost = true;
         });
-    }
-});
+        
+        peer.on('connection', handleConnection);
+    });
+
+    document.getElementById('joinBtn').addEventListener('click', () => {
+        document.getElementById('hostId').classList.remove('visible');
+        const joinInput = document.getElementById('joinId');
+        joinInput.style.display = 'block';
+        joinInput.focus();
+    });
+
+    document.getElementById('joinId').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            const hostId = event.target.value.trim();
+            if (!hostId) {
+                alert('Please enter a Host ID');
+                return;
+            }
+            peer = new Peer();
+            peer.on('open', () => {
+                conn = peer.connect(hostId);
+                handleConnection(conn);
+            });
+        }
+    });
+}
 
 function handleConnection(connection) {
     if (!conn) {
@@ -115,14 +124,14 @@ function handleMove(index, player) {
     if (checkWinner(player)) {
         gameActive = false;
         const isWinner = (isHost && player === 'X') || (!isHost && player === 'O');
-        document.getElementById('status').textContent = isWinner ? '🎉 You win!' : '😔 You lose!';
+        document.getElementById('status').textContent = isWinner ? 'You win!' : 'You lose!';
         return;
     }
 
     // Check for draw
     if (checkDraw()) {
         gameActive = false;
-        document.getElementById('status').textContent = "🤝 It's a draw!";
+        document.getElementById('status').textContent = "It's a draw!";
         return;
     }
 }
@@ -151,7 +160,7 @@ function checkDraw() {
 function updateStatus() {
     if (!gameActive) return;
     const status = document.getElementById('status');
-    status.textContent = myTurn ? '🎮 Your turn!' : "⌛ Opponent's turn...";
+    status.textContent = myTurn ? 'Your turn!' : "Opponent's turn...";
 }
 
 function resetGame() {
