@@ -72,7 +72,6 @@ h1 {
     font-size: 1.2rem;
     padding: 0.5rem;
     border-radius: 4px;
-    background-color: #f8f9fa;
     display: none;
 }
 
@@ -208,6 +207,27 @@ h1 {
     font-size: 1rem;
     padding: 0.5rem 1.5rem;
     border-radius: 8px;
+    margin: 2rem auto;
+    display: block;  /* Changed from inline to block */
+}
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.host-id-text {
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+    color: #ffffff;
+    margin: 1rem 0;
+}
+
+.host-id-text strong {
+    color: #7b61ff;
+    margin-left: 0.5rem;
+    text-shadow: 0 0 10px rgba(123, 97, 255, 0.3);
 }
 
 @keyframes titlePulse {

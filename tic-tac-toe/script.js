@@ -20,13 +20,17 @@ if (DEBUG_MODE) {
     });
 } else {
     document.getElementById('hostBtn').addEventListener('click', () => {
+        // Hide join-related elements
         document.getElementById('joinId').style.display = 'none';
+        document.getElementById('joinGameBtn').style.display = 'none';
+        document.getElementById('joinBtn').disabled = true;
+        
         const shortId = generateShortId();
         peer = new Peer(shortId);
         
         peer.on('open', () => {
             const hostIdElement = document.getElementById('hostId');
-            hostIdElement.innerHTML = `Room Code: <strong>${shortId}</strong>`;
+            hostIdElement.innerHTML = `<div class="host-id-text">Room Code: <strong>${shortId}</strong></div>`;
             hostIdElement.classList.add('visible');
             isHost = true;
         });
