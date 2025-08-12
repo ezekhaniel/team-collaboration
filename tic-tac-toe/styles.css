@@ -33,6 +33,15 @@ h1 {
     font-weight: 600;
 }
 
+.game-subtitle {
+    color: #4a4af4;
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.9;
+}
+
 .connection-panel {
     border-radius: 15px;
     padding: 2rem;

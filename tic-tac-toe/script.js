@@ -4,16 +4,24 @@ let isHost = false;
 let myTurn = false;
 let gameActive = false;
 
+// Generate a short ID for the room
+function generateShortId() {
+    return Math.random().toString(36).substring(2, 10).toUpperCase();
+}
+
 // Initialize PeerJS
 document.getElementById('hostBtn').addEventListener('click', () => {
     document.getElementById('joinId').style.display = 'none';
-    peer = new Peer();
-    peer.on('open', (id) => {
+    const shortId = generateShortId();
+    peer = new Peer(shortId);
+    
+    peer.on('open', () => {
         const hostIdElement = document.getElementById('hostId');
-        hostIdElement.innerHTML = `Your Game ID: <strong>${id}</strong>`;
+        hostIdElement.innerHTML = `Room Code: <strong>${shortId}</strong>`;
         hostIdElement.classList.add('visible');
         isHost = true;
     });
+    
     peer.on('connection', handleConnection);
 });
 
