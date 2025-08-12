@@ -12,8 +12,22 @@
     <body>
         <div class="game-wrapper">
             <div class="container text-center">
+                <!-- Connection Controls -->
+                <div id="connection-controls" class="connection-panel mb-4">
+                    <div class="connection-box">
+                        <h2 class="connection-title mb-4">Join or Host a Game</h2>
+                        <div class="buttons-wrapper mb-3">
+                            <button id="hostBtn" class="btn btn-primary">Host Game</button>
+                            <button id="joinBtn" class="btn btn-primary">Join Game</button>
+                        </div>
+                        <div id="hostId" class="game-id"></div>
+                        <input type="text" id="joinId" class="form-control mt-3" 
+                               placeholder="Enter Room Code" style="display: none;">
+                    </div>
+                </div>
+                
                 <!-- Game Board -->
-                <div id="gameBoard" class="game-container">
+                <div id="gameBoard" class="game-container" style="display: none;">
                     <div class="board-wrapper">
                         <div class="board mb-4">
                             <button class="cell" data-index="0"></button>
