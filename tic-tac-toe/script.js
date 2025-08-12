@@ -1,8 +1,9 @@
+const DEBUG_MODE = true;
 let peer = null;
 let conn = null;
 let isHost = false;
-let myTurn = false;
-let gameActive = false;
+let myTurn = DEBUG_MODE;     // Allow moves in debug mode
+let gameActive = DEBUG_MODE; // Set to true immediately in debug mode
 
 // Generate a short ID for the room
 function generateShortId() {
@@ -107,8 +108,8 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 function handleMove(index, player) {
     const cell = document.querySelector(`[data-index="${index}"]`);
-    cell.textContent = player;
-    cell.setAttribute('data-player', player);
+    cell.textContent = DEBUG_MODE ? 'X' : player; // Always use X in debug mode
+    cell.setAttribute('data-player', DEBUG_MODE ? 'X' : player);
 
     // Check for winner
     if (checkWinner(player)) {
