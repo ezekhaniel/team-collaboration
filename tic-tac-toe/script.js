@@ -88,20 +88,20 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 function handleMove(index, player) {
     const cell = document.querySelector(`[data-index="${index}"]`);
     cell.textContent = player;
-    cell.style.color = player === 'X' ? '#f44336' : '#2196F3';
+    cell.setAttribute('data-player', player);
 
     // Check for winner
     if (checkWinner(player)) {
         gameActive = false;
         const isWinner = (isHost && player === 'X') || (!isHost && player === 'O');
-        document.getElementById('status').textContent = isWinner ? 'You win!' : 'You lose!';
+        document.getElementById('status').textContent = isWinner ? '🎉 You win!' : '😔 You lose!';
         return;
     }
 
     // Check for draw
     if (checkDraw()) {
         gameActive = false;
-        document.getElementById('status').textContent = "It's a draw!";
+        document.getElementById('status').textContent = "🤝 It's a draw!";
         return;
     }
 }
@@ -130,7 +130,7 @@ function checkDraw() {
 function updateStatus() {
     if (!gameActive) return;
     const status = document.getElementById('status');
-    status.textContent = myTurn ? 'Your turn!' : "Opponent's turn...";
+    status.textContent = myTurn ? '🎮 Your turn!' : "⌛ Opponent's turn...";
 }
 
 function resetGame() {
