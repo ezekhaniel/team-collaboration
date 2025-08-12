@@ -23,7 +23,6 @@ if (DEBUG_MODE) {
         // Hide join-related elements
         document.getElementById('joinId').style.display = 'none';
         document.getElementById('joinGameBtn').style.display = 'none';
-        document.getElementById('joinBtn').disabled = true;
         
         const shortId = generateShortId();
         peer = new Peer(shortId);
