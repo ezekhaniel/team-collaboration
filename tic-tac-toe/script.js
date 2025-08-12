@@ -37,24 +37,34 @@ if (DEBUG_MODE) {
     document.getElementById('joinBtn').addEventListener('click', () => {
         document.getElementById('hostId').classList.remove('visible');
         const joinInput = document.getElementById('joinId');
+        const joinGameBtn = document.getElementById('joinGameBtn');
         joinInput.style.display = 'block';
+        joinGameBtn.style.display = 'block';
         joinInput.focus();
+    });
+
+    document.getElementById('joinGameBtn').addEventListener('click', () => {
+        connectToHost();
     });
 
     document.getElementById('joinId').addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-            const hostId = event.target.value.trim();
-            if (!hostId) {
-                alert('Please enter a Host ID');
-                return;
-            }
-            peer = new Peer();
-            peer.on('open', () => {
-                conn = peer.connect(hostId);
-                handleConnection(conn);
-            });
+            connectToHost();
         }
     });
+
+    function connectToHost() {
+        const hostId = document.getElementById('joinId').value.trim();
+        if (!hostId) {
+            alert('Please enter a Room Code');
+            return;
+        }
+        peer = new Peer();
+        peer.on('open', () => {
+            conn = peer.connect(hostId);
+            handleConnection(conn);
+        });
+    }
 }
 
 function handleConnection(connection) {
