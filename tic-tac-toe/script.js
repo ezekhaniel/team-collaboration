@@ -6,25 +6,37 @@ let gameActive = false;
 
 // Initialize PeerJS
 document.getElementById('hostBtn').addEventListener('click', () => {
+    document.getElementById('joinId').style.display = 'none';
     peer = new Peer();
     peer.on('open', (id) => {
-        document.getElementById('hostId').innerHTML = `Your Game ID: <strong>${id}</strong>`;
+        const hostIdElement = document.getElementById('hostId');
+        hostIdElement.innerHTML = `Your Game ID: <strong>${id}</strong>`;
+        hostIdElement.classList.add('visible');
         isHost = true;
     });
     peer.on('connection', handleConnection);
 });
 
 document.getElementById('joinBtn').addEventListener('click', () => {
-    const hostId = document.getElementById('joinId').value.trim();
-    if (!hostId) {
-        alert('Please enter a Host ID');
-        return;
+    document.getElementById('hostId').classList.remove('visible');
+    const joinInput = document.getElementById('joinId');
+    joinInput.style.display = 'block';
+    joinInput.focus();
+});
+
+document.getElementById('joinId').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        const hostId = event.target.value.trim();
+        if (!hostId) {
+            alert('Please enter a Host ID');
+            return;
+        }
+        peer = new Peer();
+        peer.on('open', () => {
+            conn = peer.connect(hostId);
+            handleConnection(conn);
+        });
     }
-    peer = new Peer();
-    peer.on('open', () => {
-        conn = peer.connect(hostId);
-        handleConnection(conn);
-    });
 });
 
 function handleConnection(connection) {

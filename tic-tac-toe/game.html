@@ -16,17 +16,13 @@
                 
                 <!-- Connection Controls -->
                 <div id="connection-controls" class="connection-panel mb-5">
-                    <div class="row justify-content-center gap-4">
-                        <div class="col-auto connection-box">
-                            <h3 class="connection-title mb-3">Host a Game</h3>
-                            <button id="hostBtn" class="btn btn-primary btn-lg">Create Room</button>
-                            <div id="hostId" class="mt-3 game-id"></div>
-                        </div>
-                        <div class="col-auto connection-box">
-                            <h3 class="connection-title mb-3">Join a Game</h3>
-                            <input type="text" id="joinId" class="form-control form-control-lg mb-3" placeholder="Enter Room ID">
-                            <button id="joinBtn" class="btn btn-primary btn-lg">Join Room</button>
-                        </div>
+                    <div class="buttons-wrapper mb-4">
+                        <button id="hostBtn" class="btn btn-primary btn-lg">Host Game</button>
+                        <button id="joinBtn" class="btn btn-primary btn-lg">Join Game</button>
+                    </div>
+                    <div class="connection-fields">
+                        <div id="hostId" class="game-id"></div>
+                        <input type="text" id="joinId" class="form-control form-control-lg" placeholder="Enter Room ID" style="display: none;">
                     </div>
                 </div>
 

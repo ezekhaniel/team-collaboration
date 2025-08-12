@@ -34,14 +34,12 @@ h1 {
 }
 
 .connection-panel {
-    background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     padding: 2rem;
     backdrop-filter: blur(10px);
 }
 
 .connection-box {
-    background: rgba(255, 255, 255, 0.1);
     padding: 2rem;
     border-radius: 10px;
     min-width: 300px;
@@ -54,6 +52,7 @@ h1 {
 }
 
 .game-id {
+    display: none; /* Hide by default */
     font-size: 1.2rem;
     color: #4a4af4;
     word-break: break-all;
@@ -61,6 +60,10 @@ h1 {
     padding: 0.5rem;
     border-radius: 5px;
     margin-top: 1rem;
+}
+
+.game-id.visible {
+    display: block;
 }
 
 .board-wrapper {
@@ -154,4 +157,15 @@ h1 {
     font-weight: 600;
     color: #fff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.buttons-wrapper {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.connection-fields {
+    max-width: 400px;
+    margin: 0 auto;
 }
